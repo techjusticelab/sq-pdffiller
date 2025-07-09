@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/db/connection';
-import { applications } from '$lib/db/schema';
+import { db } from '$lib/connection';
+import { applications } from '$lib/server/db/schema';
 import nodemailer from 'nodemailer';
 import { env } from '$env/dynamic/private';
 

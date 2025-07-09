@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { supabase } from '$lib/server/supabase';
+	import { supabase } from '$lib/supabase';
 	import StepIndicator from './StepIndicator.svelte';
 	import PersonalInfo from './steps/PersonalInfo.svelte';
 	import ContactInfo from './steps/ContactInfo.svelte';

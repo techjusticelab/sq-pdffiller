@@ -1,16 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
+	import { user } from '$lib/stores/auth';
 
-	onMount(async () => {
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
-		if (!session) {
-			goto('/');
-		}
-	});
+	// Redirect if not authenticated
+	$: if ($user === null) {
+		goto('/');
+	}
 
 	async function signOut() {
 		await supabase.auth.signOut();
