@@ -1,10 +1,46 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { generateFilledPdf } from '$lib/pdfGen';
 
 	export let formData;
 	export let loading = false;
 
 	const dispatch = createEventDispatcher();
+
+	async function downloadPdf() {
+		try {
+			loading = true;
+			const pdfBytes = await generateFilledPdf(formData);
+
+			// Create a blob from the PDF bytes
+			const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+
+			// Create a URL for the blob
+			const url = URL.createObjectURL(blob);
+
+			// Create a link element
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = 'CDCR_2311_Application.pdf';
+
+			// Append to the document
+			document.body.appendChild(link);
+
+			// Click the link
+			link.click();
+
+			// Remove the link
+			document.body.removeChild(link);
+
+			// Release the blob URL
+			URL.revokeObjectURL(url);
+		} catch (error) {
+			console.error('Error downloading PDF:', error);
+			alert('Error generating PDF: ' + error.message);
+		} finally {
+			loading = false;
+		}
+	}
 </script>
 
 <div>
@@ -126,17 +162,28 @@
 		>
 			Previous
 		</button>
-		<button
-			on:click={() => dispatch('submit')}
-			disabled={loading}
-			class="flex items-center rounded-lg bg-green-600 px-8 py-3 text-white transition-colors duration-200 hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-		>
-			{#if loading}
-				<div class="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-				Submitting...
-			{:else}
-				Submit Application
-			{/if}
-		</button>
+
+		<div class="flex space-x-4">
+			<button
+				on:click={downloadPdf}
+				disabled={loading}
+				class="rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors duration-200 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+			>
+				Download PDF
+			</button>
+
+			<button
+				on:click={() => dispatch('submit')}
+				disabled={loading}
+				class="flex items-center rounded-lg bg-green-600 px-8 py-3 text-white transition-colors duration-200 hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+			>
+				{#if loading}
+					<div class="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+					Submitting...
+				{:else}
+					Submit Application
+				{/if}
+			</button>
+		</div>
 	</div>
 </div>
